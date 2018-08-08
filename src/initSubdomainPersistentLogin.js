@@ -20,14 +20,14 @@ export default function initSubdomainPersistentLogin(
 
   // parse cookie string and look for the login token
   const getToken = () => {
-    if (document.cookie.length > 0) {
-      for (const cookieKeyValue of document.cookie.split('')) {
-        const cookie = cookieKeyValue && cookieKeyValue.split('=') || []
-        if (cookie.length > 1 && cookie[0].trim() === cookieName) {
-          return cookie[1].trim()
-        }
-      }
+    const name = cookieName + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0; i<ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
     }
+    return "";
   }
 
   // --------------------------------------------------------------------------
@@ -43,7 +43,6 @@ export default function initSubdomainPersistentLogin(
       // in case there is no login token in local storage, try get it from a cookie
       if (!original) return getToken()
     }
-
     return original
   }
 
@@ -60,7 +59,6 @@ export default function initSubdomainPersistentLogin(
         date = new Date()
         date.setDate(date.getDate() + expiresAfterDays)
       }
-
       setToken(value, date)
     }
 
